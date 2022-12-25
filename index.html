@@ -1,0 +1,285 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="./src/fontawesome/fontawesome-free-6.2.1-web/css/all.css">
+		<link rel="stylesheet" href="./src/fontawesome/fontawesome-free-6.2.1-web/css/v4-shims.min.css">
+		<script defer src="./src/js/jquery-3.6.1.min.js"></script>
+		<script defer src="./src/fontawesome/fontawesome-free-6.2.1-web/js/all.js"></script>
+		<script defer src="./src/fontawesome/fontawesome-free-6.2.1-web/js/v4-shims.js"></script>
+		<script language="javascript" src="./src/js/lz-string-master/libs/lz-string.js"></script>
+		<link rel="stylesheet" href="./src/css/bootstrap.min.css">
+		<link rel="stylesheet" href="./src/css/shards.css">
+		<link rel="shortcut icon" href="../src/Logo.svg" />
+		<title>QR-ID</title>
+		<style>
+			
+			body { min-height: 100vh;}
+			
+			.form-card {
+			position:absolute;
+			width:576px;
+			/*padding:20px 0 0 0;*/
+			left: 50%;
+			-ms-transform: translate(-50%,20px);
+			-webkit-transform: translate(-50%,20px);
+			transform: translate(-50%,20px);
+			transition:all .6s cubic-bezier(.86,0,.07,1);
+			}
+			.icon-col {
+				padding-left: 10px;
+			}
+			.icon {
+				cursor:pointer;
+				font-size:xx-large;
+				opacity: 20%;
+			}
+			.icon:hover {
+				opacity: 100%;
+			}
+			.first-text {
+				vertical-align: top;
+			}
+			.second-text {
+				vertical-align: top;
+				word-wrap:break-word;
+				padding-left: 10px;
+			}
+			#inputtable {
+				width: 100%;
+			}
+			.container{
+				width: 100%;
+				height: auto;
+			}
+			/* the stylesheet will only affect the SVG that is directly embedded in the HTML body, not the one via <img> */
+			.qrcode.dark{
+				fill: #b00b69;
+			}
+			.qrcode.light{
+				fill: #cccccc;
+			}
+		</style>
+	</head>
+	<script type="text/javascript">
+		window.uri="https://qr-id.io";
+	</script>
+	<body>
+		<div id="form-card" class="form-card">
+			<div class="card">
+				<h1 class="card-header">Create your QR-ID!</h1>
+				<div class="card-body" style="padding-top:0;">
+					<table id="urivalue">
+
+					</table>
+					<p>
+						<div id="qr-id-io">
+							<div id="qr-id-div">
+								<table id="inputtable">
+								</table>
+								<i class="icon fa-solid fa-plus icon-lg text-primary" onclick="createInput('','')"></i>
+							</div>
+						</div>
+					</p>
+					<div id="qr-code-div">
+						<p>
+							<div class="container" id="qrcode-container-img" style="text-align: center;"></div>
+							<div class="container" id="qrcode-container-svg" style="text-align: center; display:none;"></div>
+						</p>
+						<script type="module">
+							import {
+								QRCode, QROptions,
+								IS_DARK, M_ALIGNMENT, M_FINDER, M_FINDER_DOT, OUTPUT_MARKUP_SVG
+							} from './src/js/js-qrcode-main/src/index.js';
+
+							window.createQR = function() {	
+								var localuri = String(window.uri)+"/?"+getInputValues();
+								// embed via <img>
+								var options = new QROptions({
+									outputType: OUTPUT_MARKUP_SVG,
+									//version: 40,
+									// toggle base64 data URI
+									imageBase64: true,
+									// if set to false, the light modules won't be rendered
+									drawLightModules: true,
+									// empty the default value to remove the fill* attributes from the <path> elements
+									markupDark: '',
+									markupLight: '',
+									// draw the modules as circles isntead of squares
+									drawCircularModules: false,
+									//circleRadius: 0.4,
+									// connect paths
+									connectPaths: true,
+									// keep modules of these types as square
+									keepAsSquare:[
+										M_FINDER|IS_DARK,
+										M_FINDER_DOT|IS_DARK,
+										M_ALIGNMENT|IS_DARK,
+									],
+								});
+								// https://developer.mozilla.org/en-US/docs/Web/SVG/Element/linearGradient
+								options.svgDefs = ''
+									+ '<style><![CDATA[\n'
+									+ '.dark{fill: #000;}\n'
+									+ '.light{fill: #fff;}\n'
+									+ ']]></style>';
+
+
+								var img = document.createElement('img');
+								img.alt = 'QRCode';
+								img.src = (new QRCode(options)).render(localuri);
+								img.style = "text-align:center;width:50%;display:inline-block;border:1mm dotted #f0f0f0;";
+
+								document.getElementById('qrcode-container-img').innerHTML="";
+								document.getElementById('qrcode-container-img').appendChild(img);
+
+
+								// embed directly via <svg>
+								options.imageBase64 = false;
+								options.svgDefs = '';
+
+								document.getElementById('qrcode-container-svg').innerHTML = (new QRCode(options)).render(localuri);
+								document.getElementById('uri').innerHTML = '<i><a href="'+localuri+'" target="_blank">'+localuri+'</a></i>';
+								window.setTimeout(loadQRuri,1);
+							}
+						</script>
+					</div>
+					<div>
+						<p style="text-align: center;">
+							<a href="#" stlye="visibility: hidden" id="download-qr" >
+								<button class="btn btn-primary" style="min-width:50%;">Download QR-Code<br>(SVG)</button>
+							</a>
+						</p>
+					</div>
+					<div id="uri">
+
+					</div>
+					<hr>
+					<div id="description">
+						<p>This website doesn't process any data at the server side, has no cookies and doesn't save any data!</p>
+					</div>
+					<hr>
+					<div id="contact">
+						<small>
+							<p>
+								Contact:<br>
+								<a href="mailto:sebiscodes@gmail.com">sebiscodes@gmail.com</a>
+							</p>
+						</small>
+					</div>
+					<div>
+						<p style="text-align: center;">
+							<a href="https://github.com/sebiscodes" target="_blank"><i class="icon fab fa-lg icon-lg fa-github"></i></a> 
+							<a href="https://www.instagram.com/sebisprojects/" target="_blank"><i class="icon fab fa-lg icon-lg fa-instagram"></i></a> 
+							<a href="https://linktr.ee/sebisprojects/" target="_blank"><i class="icon fa-solid fa-lg icon-lg fa-link"></i></a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			function onInputKeyPress(e) {
+				if (e.key == "Enter") {
+					createInput("","");
+					e.preventDefault();
+					var inputs = document.getElementsByTagName('input');
+					for (var i = 0; i < inputs.length; i++) {
+						if (document.activeElement.id == inputs[i].id && i+1 < inputs.length ) {
+							inputs[i+1].focus();
+							break;   
+						}
+					}
+				}
+			}
+			function loadQRuri(){
+				$('#download-qr').attr('href',$('#qrcode-container-img img').attr('src'));
+				$('#download-qr').attr('download', "QR-ID_code");
+			}
+			function createInput(name, value) {
+				var exists = true;
+				var beginning = "row_";
+				var i = 0;
+				var id;
+				while (exists) {
+					id = beginning+i;
+					if (!document.getElementById(id)) exists = false;	
+					else i++;
+				}
+				$('#inputtable').append('<tr id="row_'+i+'"><td><input class="form-control" name="name" id="name_'+i+'" value="'+name+'" onchange="window.createQR();"></td><td><input class="form-control" name="value" id="value_'+i+'" value="'+value+'" onchange="window.createQR();"></td><td class="icon-col"><i class="icon fas fa-trash-alt icon-lg text-danger" onclick="deleteRow('+i+')"></i></td></tr>');
+				document.getElementById('value_'+i).onkeypress = function(e) {
+					onInputKeyPress(e);
+				}
+				return i;
+			}
+			function deleteRow(i) {
+				$("#row_"+i).remove();
+				window.createQR();
+			}
+			function getInputValues() {
+				var values = "";
+				var first = true;
+				var rows = $("#inputtable").children();
+				rows.each(function() {
+					if (first) first = false;
+					else values = values + "&";
+					var n = $("#"+this.id + " td [name='name']").val();
+					var v = $("#"+this.id + " td [name='value']").val();
+					if (n!="" && v!= "")
+						values = values + n +"="+v;
+				});
+				//return "c="+btoa(btoa(btoa(btoa(values))));
+				return "c="+LZString.compressToEncodedURIComponent (values);
+			}
+			function loadContent() {
+				var queryString = window.location.search;
+				var urlParams = new URLSearchParams(queryString);
+				var cVal = urlParams.get("c");
+				if (cVal != null && cVal != "") {
+					//document.write(cVal);
+					var sp = LZString.decompressFromEncodedURIComponent(cVal);
+					var params = sp.split("&");
+					params.forEach(param => {
+						if (param.includes("=")) {
+							p = param.split("=");
+							p[0] = decodeURI(p[0]);
+							p[1] = decodeURI(p[1]);
+							createInput(p[0],p[1]);
+							$("#urivalue").append('<tr><td class="first-text">'+p[0]+'</td><td class="second-text">'+p[1]+'</td></tr>')
+						}
+					});
+					$(".card-body").attr("style","");
+					$("#qr-id-div").attr("style", "display:none");
+					$("#qr-id-io").append('<a href=".">Create new QR-code</a><hr>');
+				}
+				createInput("","");
+				window.createQR();
+			}
+		</script>
+    <script>
+	window.formCardWidth = 576;
+        window.onload = function() {
+
+            if (document.body.offsetWidth > window.formCardWidth || document.documentElement.offsetWidth > window
+                .formCardWidth) {
+                document.getElementById("form-card").setAttribute("style", "width:" + window.formCardWidth + "px;");
+            } else {
+                document.getElementById("form-card").setAttribute("style",
+                    "width:100%;-ms-transform: translate(-50%,0px);-webkit-transform: translate(-50%,0px);transform: translate(-50%,0px);"
+                );
+            }
+			loadContent();
+        };
+        window.onresize = function() {
+            if (document.body.offsetWidth > window.formCardWidth || document.documentElement.offsetWidth > window
+                .formCardWidth) {
+                document.getElementById("form-card").setAttribute("style", "width:" + window.formCardWidth + "px;");
+            } else {
+                document.getElementById("form-card").setAttribute("style",
+                    "width:100%;-ms-transform: translate(-50%,0px);-webkit-transform: translate(-50%,0px);transform: translate(-50%,0px);"
+                );
+            }
+        };
+    </script>
+	</body>
+</html>

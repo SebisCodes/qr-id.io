@@ -1,0 +1,5 @@
+.build
+.idea
+dist
+lib
+node_modules
