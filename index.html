@@ -223,7 +223,7 @@
 					if (!document.getElementById(id)) exists = false;	
 					else i++;
 				}
-				$('#inputtable').append('<tr id="row_'+i+'"><td><input class="form-control" name="name" id="name_'+i+'" value="'+name+'" onchange="window.createQR();"></td><td><input class="form-control" name="value" id="value_'+i+'" value="'+value+'" onchange="window.createQR();"></td><td class="icon-col"><i class="icon fas fa-trash-alt icon-lg text-danger" onclick="deleteRow('+i+')"></i></td></tr>');
+				$('#inputtable').append('<tr id="row_'+i+'"><td><input class="form-control" name="name" id="name_'+i+'" value="'+name+'" placeholder="Name" onchange="window.createQR();"></td><td><input class="form-control" name="value" id="value_'+i+'" value="'+value+'" placeholder="Value" onchange="window.createQR();"></td><td class="icon-col"><i class="icon fas fa-trash-alt icon-lg text-danger" onclick="deleteRow('+i+')"></i></td></tr>');
 				document.getElementById('value_'+i).onkeypress = function(e) {
 					onInputKeyPress(e);
 				}
@@ -245,7 +245,6 @@
 					if (n!="" && v!= "")
 						values = values + n +"="+v;
 				});
-				//return "c="+btoa(btoa(btoa(btoa(values))));
 				return "c="+LZString.compressToEncodedURIComponent (values);
 			}
 			function loadContent() {
@@ -253,7 +252,6 @@
 				var urlParams = new URLSearchParams(queryString);
 				var cVal = urlParams.get("c");
 				if (cVal != null && cVal != "") {
-					//document.write(cVal);
 					var sp = LZString.decompressFromEncodedURIComponent(cVal);
 					var params = sp.split("&");
 					params.forEach(param => {
